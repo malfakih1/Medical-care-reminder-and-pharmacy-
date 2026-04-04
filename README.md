@@ -17,4 +17,4 @@ Many people struggle to access medical care due to financial or physical limitat
 
 ## Architecture Link
 
-ARCHITECTURE.md
+[ARCHITECTURE.md](./ARCHITECTURE.md)
