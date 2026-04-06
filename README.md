@@ -1,4 +1,4 @@
-# Medical care reminder and pharmacy
+# MedLinka
 
 ## Team Details
 
@@ -11,10 +11,10 @@
 | AL khair Makeen | 220513434 | krkralkair007 | 
 
 
-## Project Introduction
+## Project Introduction:
 
 Many people struggle to access medical care due to financial or physical limitations. To solve this, our application combines AI symptom checking, telemedicine, pharmacy orders, and medication reminders into a single, easy-to-use platform. Our ultimate goal is to create a practical system that truly helps people and makes healthcare more accessible for everyone.
 
 ## Architecture Link
 
-[View the Software Architecture Documentation](ARCHITECTURE.md)
+[ARCHITECTURE.md](./ARCHITECTURE.md)
