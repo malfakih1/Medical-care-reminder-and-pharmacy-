@@ -3,14 +3,11 @@ import sqlite3
 
 app = Flask(__name__)
 
-# =========================
-# إنشاء الجداول
-# =========================
 def create_tables():
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
 
-    # جدول الدكاترة
+
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS doctors (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -19,7 +16,7 @@ def create_tables():
         )
     ''')
 
-    # جدول المرضى
+    
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS patients (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -32,9 +29,7 @@ def create_tables():
     conn.close()
 
 
-# =========================
-# إدخال بيانات الدكاترة
-# =========================
+
 def insert_doctors():
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
@@ -58,9 +53,7 @@ def insert_doctors():
     conn.close()
 
 
-# =========================
-# إدخال بيانات المرضى
-# =========================
+
 def insert_patients():
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
@@ -82,17 +75,13 @@ def insert_patients():
     conn.close()
 
 
-# =========================
-# الصفحة الرئيسية
-# =========================
+
 @app.route('/')
 def home():
     return "Backend is working!"
 
 
-# =========================
-# API الدكاترة
-# =========================
+
 @app.route('/doctors')
 def get_doctors():
     conn = sqlite3.connect('database.db')
@@ -113,9 +102,7 @@ def get_doctors():
     return jsonify(doctors_list)
 
 
-# =========================
-# API المرضى
-# =========================
+
 @app.route('/patients')
 def get_patients():
     conn = sqlite3.connect('database.db')
@@ -136,15 +123,11 @@ def get_patients():
     return jsonify(patients_list)
 
 
-# =========================
-# تشغيل أولي
-# =========================
+
 create_tables()
 insert_doctors()
 insert_patients()
 
 
-# =========================
-# تشغيل السيرفر (بدون مشاكل)
-# =========================
+
 app.run(debug=True)
