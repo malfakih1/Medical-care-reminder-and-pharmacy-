@@ -130,3 +130,54 @@ The logical view describes the object-oriented decomposition of MedLinka, organi
 - `Appointment` links exactly one `PatientProfile` and one `DoctorProfile`.
 - `Order` contains many `OrderItem`s.
 - `OrderItem` generates exactly one `ReminderSchedule`.
+
+## 6. Process View
+
+> **Reader:** System integrators and performance engineers.
+
+### 6.1 Process Flow and Concurrency
+
+MedLinka utilizes Python's asynchronous ecosystem (ASGI/Uvicorn) to handle high concurrency without the overhead of heavy threads. 
+
+**Flow A — AI Triage (Synchronous API with Async I/O)**
+1. Mobile App sends `POST /api/v1/ai/chat` with symptom text and `Accept-Language` header.
+2. FastAPI receives the request and validates the JWT token.
+3. FastAPI awaits the `Gemini API` call asynchronously (non-blocking).
+4. The response is processed, a legal disclaimer is injected based on the requested language, and the result is returned to the user.
+
+**Flow B — Order Checkout & Reminders (Background Tasks)**
+1. Mobile App sends `POST /api/v1/orders`.
+2. FastAPI validates stock and writes the `Order` to the SQLite database.
+3. Instead of blocking the HTTP response, FastAPI dispatches a `BackgroundTask` to process the `ReminderSchedule`.
+4. The API immediately returns a success response to the patient.
+5. In the background, the server schedules the notification logic.
+
+### 6.2 Fault Tolerance
+- **AI Failure:** If Gemini times out, the backend catches the exception and returns a localized standard error ("AI unavailable, please consult a doctor").
+- **Database Locks:** SQLite handles concurrent reads well, but writes are sequential. FastAPI's async ORM interactions ensure the event loop is not blocked during I/O.
+
+---
+
+## 7. Development View
+
+> **Reader:** Developers and project managers.
+
+### 7.1 Layer Hierarchy & Repository Structure
+
+The monorepo is divided strictly by tier to allow independent development of the mobile client, web client, and backend.
+
+```text
+medlinka/
+├── backend/                  # Layer 3: Server (FastAPI + SQLite)
+│   ├── routers/              # API endpoints (auth, doctors, ai, orders)
+│   ├── models/               # SQLAlchemy DB models & Pydantic schemas
+│   ├── services/             # External integrations (Gemini AI)
+│   ├── main.py               # Application entry point
+│   └── requirements.txt
+├── mobile/                   # Layer 2: Mobile Client (React Native + Expo)
+│   ├── app/                  # Screens and navigation
+│   └── package.json
+├── dashboard/                # Layer 1: Web Client (React + Vite)
+│   ├── src/                  # Admin/Doctor interfaces
+│   └── package.json
+└── docker-compose.yml        # Layer 0: Infrastructure
