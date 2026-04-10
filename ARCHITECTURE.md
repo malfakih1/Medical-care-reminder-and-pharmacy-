@@ -209,3 +209,46 @@ The current environment is containerized using Docker Compose for seamless local
 
 **External Dependencies:**
 - **Gemini API:** Accessed via outbound HTTPS from the `backend` container.
+
+## 9. Scenarios
+
+### 9.1 Scenario A — Multilingual AI Triage
+1. A Turkish patient authenticates. App sets `Accept-Language: tr`.
+2. Patient sends symptoms to `POST /api/v1/ai/chat`.
+3. The FastAPI router passes the prompt and language flag to the Gemini service.
+4. Gemini processes the request. The backend appends a Turkish medical disclaimer.
+5. The Mobile App displays the localized advice and suggests booking a doctor.
+
+### 9.2 Scenario B — Medicine Order
+1. Patient browses `/api/v1/pharmacy/medicines` and submits a cart to `POST /api/v1/orders`.
+2. FastAPI validates the stock and commits the order to SQLite.
+3. A `BackgroundTask` is triggered to schedule medication reminders based on the `OrderItem` instructions.
+4. The patient immediately sees a "Success" screen on the mobile app without waiting for the reminder scheduling to finish.
+
+---
+
+## 10. Size and Performance
+
+- **Codebase:** Separated into 3 distinct ecosystems (Python backend, React Native mobile, React web).
+- **Performance Target:** FastAPI guarantees sub-100ms response times for database reads (e.g., listing doctors). AI triage is bounded strictly by Gemini network latency.
+- **Data:** SQLite is currently used for zero-config deployment. If traffic exceeds SQLite's write capacity, the ORM (SQLAlchemy) allows switching to PostgreSQL with minimal code changes.
+
+---
+
+## 11. Quality
+
+- **Security:** Passwords are hashed using bcrypt. API relies on stateless JWTs.
+- **Medical Safety:** The AI system is heavily sandboxed. Every single AI response includes a non-bypassable medical disclaimer injected at the backend layer.
+- **Accessibility:** The mobile and web apps fully support Right-to-Left (RTL) layouts for Arabic users natively through the UI frameworks.
+
+---
+
+## Appendix A — Design Principles and Rationale
+
+| Decision | Alternatives considered | Chosen approach | Rationale |
+|----------|------------------------|-----------------|-----------|
+| Backend Framework | Django, Flask | **FastAPI** | Superior async performance, automatic Swagger UI docs (`/docs`), and native type checking with Pydantic. |
+| AI Provider | OpenAI, Vertex AI | **Gemini** | Highly capable multilingual processing, cost-effective for the academic/startup phase. |
+| Mobile Tech | Native (Swift/Kotlin) | **React Native (Expo)** | Single codebase for iOS and Android; aligns with the web team's React knowledge. |
+| Database | PostgreSQL | **SQLite** | Zero-configuration needed for local dev via Docker. SQLAlchemy makes future migration to Postgres trivial. |
+| Async Tasks | Celery + Redis | **FastAPI BackgroundTasks** | Keeps infrastructure simple (no extra containers needed) while still preventing HTTP blocking. |
