@@ -1,4 +1,8 @@
 ![ MedLinka](https://github.com/Mohammad-Alnajjar4/Medical-care-reminder-and-pharmacy-/blob/dd5f340f0721f0526b0a03eba0f57a7bc6daeace/MEDLINKA%20PIC%20INFO.jpg)
+![ MedLinka](https://github.com/Mohammad-Alnajjar4/Medical-care-reminder-and-pharmacy-/blob/1e3f5fde8c316933dc56774b6c7d053e73911281/1_database_schema_erd.png)
+![ MedLinka]([https://github.com/Mohammad-Alnajjar4/Medical-care-reminder-and-pharmacy-/blob/1e3f5fde8c316933dc56774b6c7d053e73911281/1_database_schema_erd.png](https://github.com/Mohammad-Alnajjar4/Medical-care-reminder-and-pharmacy-/blob/1e3f5fde8c316933dc56774b6c7d053e73911281/2_api_endpoints_flow.png))
+![ MedLinka]([https://github.com/Mohammad-Alnajjar4/Medical-care-reminder-and-pharmacy-/blob/1e3f5fde8c316933dc56774b6c7d053e73911281/1_database_schema_erd.png](https://github.com/Mohammad-Alnajjar4/Medical-care-reminder-and-pharmacy-/blob/1e3f5fde8c316933dc56774b6c7d053e73911281/3_system_architecture.png))
+
 
 ## Team Details
 
