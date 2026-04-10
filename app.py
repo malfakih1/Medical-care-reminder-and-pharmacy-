@@ -1,3 +1,4 @@
+
 from flask import Flask, jsonify, request
 import sqlite3
 
@@ -159,8 +160,102 @@ def book_appointment():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+# NEW: Add a new doctor
+@app.route('/doctors', methods=['POST'])
+def add_doctor():
+    try:
+        body = request.get_json()
+        if not body or not all(k in body for k in ('name', 'specialty')):
+            return jsonify({"error": "name and specialty are required"}), 400
+
+        name = body['name'].strip()
+        specialty = body['specialty'].strip()
+        if not name or not specialty:
+            return jsonify({"error": "name and specialty must not be empty"}), 400
+
+        conn = sqlite3.connect('database.db')
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO doctors (name, specialty) VALUES (?, ?)", (name, specialty))
+        conn.commit()
+        new_id = cursor.lastrowid
+        conn.close()
+        return jsonify({"message": "Doctor added", "doctor_id": new_id}), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# NEW: Add a new patient
+@app.route('/patients', methods=['POST'])
+def add_patient():
+    try:
+        body = request.get_json()
+        if not body or not all(k in body for k in ('name', 'age')):
+            return jsonify({"error": "name and age are required"}), 400
+
+        name = body['name'].strip()
+        age = body['age']
+        if not name:
+            return jsonify({"error": "name must not be empty"}), 400
+        if not isinstance(age, int) or age <= 0:
+            return jsonify({"error": "age must be a positive integer"}), 400
+
+        conn = sqlite3.connect('database.db')
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO patients (name, age) VALUES (?, ?)", (name, age))
+        conn.commit()
+        new_id = cursor.lastrowid
+        conn.close()
+        return jsonify({"message": "Patient added", "patient_id": new_id}), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# NEW: Update appointment status (e.g. confirmed, cancelled)
+@app.route('/appointments/<int:appointment_id>', methods=['PATCH'])
+def update_appointment_status(appointment_id):
+    try:
+        body = request.get_json()
+        if not body or 'status' not in body:
+            return jsonify({"error": "status is required"}), 400
+
+        allowed_statuses = ['pending', 'confirmed', 'cancelled']
+        new_status = body['status'].strip().lower()
+        if new_status not in allowed_statuses:
+            return jsonify({"error": f"status must be one of: {', '.join(allowed_statuses)}"}), 400
+
+        conn = sqlite3.connect('database.db')
+        cursor = conn.cursor()
+        cursor.execute("SELECT id FROM appointments WHERE id = ?", (appointment_id,))
+        if not cursor.fetchone():
+            conn.close()
+            return jsonify({"error": "Appointment not found"}), 404
+
+        cursor.execute("UPDATE appointments SET status = ? WHERE id = ?", (new_status, appointment_id))
+        conn.commit()
+        conn.close()
+        return jsonify({"message": "Appointment status updated", "appointment_id": appointment_id, "status": new_status})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# NEW: Delete an appointment
+@app.route('/appointments/<int:appointment_id>', methods=['DELETE'])
+def delete_appointment(appointment_id):
+    try:
+        conn = sqlite3.connect('database.db')
+        cursor = conn.cursor()
+        cursor.execute("SELECT id FROM appointments WHERE id = ?", (appointment_id,))
+        if not cursor.fetchone():
+            conn.close()
+            return jsonify({"error": "Appointment not found"}), 404
+
+        cursor.execute("DELETE FROM appointments WHERE id = ?", (appointment_id,))
+        conn.commit()
+        conn.close()
+        return jsonify({"message": "Appointment deleted", "appointment_id": appointment_id})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 create_tables()
 insert_doctors()
 insert_patients()
 
-app.run(debug=True)
+if __name__ == '__main__':
+    app.run(debug=True)
