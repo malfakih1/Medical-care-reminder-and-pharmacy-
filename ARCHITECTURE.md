@@ -208,20 +208,7 @@ MedLinka utilizes Python's asynchronous ecosystem (ASGI/Uvicorn) to handle high 
 ![flow A](https://github.com/malfakih1/Medical-care-reminder-and-pharmacy-/blob/21eacafca656ba25723a9441e6c6328976fee143/flow_triage.png)
 
 **Flow B — Order Checkout & Background Reminders**
-
-```
-  Mobile App                  FastAPI Server               SQLite DB         Background Worker
-      |                            |                            |                    |
-      |-- POST /api/v1/orders ---->|                            |                    |
-      |                            |-- Validate stock --------->|                    |
-      |                            |<-- Stock confirmed --------|                    |
-      |                            |-- Write Order to DB ------>|                    |
-      |                            |-- Dispatch BackgroundTask ---------------------->|
-      |<-- 200 Success response ---|                            |                    |
-      |                            |                            |     Schedule reminders
-      |                            |                            |     from OrderItem
-      |                            |                            |<-- Save ReminderSchedule
-```
+![flow B](https://github.com/malfakih1/Medical-care-reminder-and-pharmacy-/blob/7daa8e4e2b2a73932cd4e81a1f714b38fb0a00be/flow_b_order_checkout.png)
 
 **Flow C — Doctor Booking**
 
