@@ -202,7 +202,6 @@ MedLinka utilizes Python's asynchronous ecosystem (ASGI/Uvicorn) to handle high 
 
 ---
 
-### 6.2 Process Flow Diagrams
 
 **Flow A — AI Triage Request**
 ![flow A](https://github.com/malfakih1/Medical-care-reminder-and-pharmacy-/blob/21eacafca656ba25723a9441e6c6328976fee143/flow_triage.png)
